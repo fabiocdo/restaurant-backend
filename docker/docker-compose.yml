@@ -1,0 +1,18 @@
+name: restaurant-backend
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:16.2
+    environment:
+      POSTGRES_DB: restaurant
+      POSTGRES_USER: restaurant
+      POSTGRES_PASSWORD: restaurant
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data/entrypoint:/docker-entrypoint-initdb.d
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
