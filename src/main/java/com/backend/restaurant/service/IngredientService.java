@@ -15,7 +15,7 @@ public interface IngredientService {
 
   void updateIngredient(Ingredient ingredient);
 
-  int createIngredient(String name, int quantity, BigDecimal price);
+  UUID createIngredient(String name, int quantity, BigDecimal price);
 
   void deleteIngredient(UUID id);
 }
