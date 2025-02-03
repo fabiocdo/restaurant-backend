@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/ingredients")
 public class IngredientController {
+
     @GetMapping
     public ResponseEntity<List<Ingredient>> getAllIngredients() {
         return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
