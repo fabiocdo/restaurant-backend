@@ -23,7 +23,8 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public List<Ingredient> getIngredientsByName(String name) {
-        return null;    }
+        return null;
+    }
 
     @Override
     public void updateIngredient(Ingredient ingredient) {
