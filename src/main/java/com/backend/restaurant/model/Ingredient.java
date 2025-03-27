@@ -9,7 +9,7 @@ public class Ingredient {
     private final String name;
     private final int quantity;
     private final BigDecimal price;
-
+    
     public Ingredient(UUID id, String name, int quantity, BigDecimal price) {
         this.id = id;
         this.name = name;
