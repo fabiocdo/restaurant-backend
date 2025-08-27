@@ -23,21 +23,19 @@ public class IngredientController {
         this.ingredientService = ingredientService;
     }
 
-    @GetMapping("/ingredients")
-        public ResponseEntity<List<Ingredient>> getIngredients(@RequestParam(value = "name", required = false) String name) {
-            List<Ingredient> ingredients;//required false, pq o true é default ai deixa de ser opcional
+    @GetMapping
+    public ResponseEntity<List<Ingredient>> getIngredients(@RequestParam(value = "name", required = false) String name) {//required false, pq o true é default ai deixa de ser opcional
 
-            if (name == null || name.isEmpty()) {
-                ingredients = ingredientService.getAllIngredients();
-            } else {
-                ingredients = ingredientService.getIngredientsByName(name);
-            }
+        if (name == null || name.isEmpty()) {
+            final List<Ingredient> ingredients = ingredientService.getAllIngredients();
             return new ResponseEntity<>(ingredients, HttpStatus.OK);
         }
+        final List<Ingredient> ingredients = ingredientService.getIngredientsByName(name);
+        return new ResponseEntity<>(ingredients, HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UUID> getIngredientById(@PathVariable UUID id){
-        UUID randomId = UUID.randomUUID();// enquanto não temos service/repository, devolvemos UUID random
-        return new ResponseEntity<>(randomId, HttpStatus.OK);
+        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 }
