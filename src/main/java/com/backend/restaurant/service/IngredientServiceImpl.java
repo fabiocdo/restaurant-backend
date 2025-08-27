@@ -29,12 +29,16 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public List<Ingredient> getIngredientsByName(String name) {
-        return null;
+        Ingredient ingredient = new Ingredient(
+                UUID.fromString("11111111-1111-1111-1111-111111111111"),
+                name,
+                60,
+                BigDecimal.valueOf(12.00));
+        return List.of(ingredient);
     }
 
     @Override
     public void updateIngredient(Ingredient ingredient) {
-
     }
 
     @Override
