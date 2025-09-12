@@ -39,7 +39,7 @@ public class IngredientController {
         Ingredient ingredient = ingredientService.getIngredientById(id);
 
         if (ingredient == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(ingredient);
     }

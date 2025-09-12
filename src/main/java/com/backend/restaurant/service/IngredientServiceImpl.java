@@ -24,7 +24,7 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public Ingredient getIngredientById(UUID id) {
-        return ingredientRepository.findById(id).orElse(null); //provided optional?
+        return ingredientRepository.findById(id).orElse(null);
     }
 
     @Override
