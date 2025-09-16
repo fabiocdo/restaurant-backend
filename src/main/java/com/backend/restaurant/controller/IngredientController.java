@@ -35,7 +35,12 @@ public class IngredientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UUID> getIngredientById(@PathVariable UUID id){
-        return new ResponseEntity<>(id, HttpStatus.OK);
+    public ResponseEntity<Ingredient> getIngredientById(@PathVariable UUID id){
+        Ingredient ingredient = ingredientService.getIngredientById(id);
+
+        if (ingredient == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(ingredient);
     }
 }
