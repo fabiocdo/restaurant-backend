@@ -1,17 +1,16 @@
 package com.backend.restaurant.controller;
 
+import com.backend.restaurant.controller.dto.CreateIngredientRequest;
 import com.backend.restaurant.model.Ingredient;
 import com.backend.restaurant.service.IngredientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/ingredients")
@@ -37,5 +36,17 @@ public class IngredientController {
     @GetMapping("/{id}")
     public ResponseEntity<UUID> getIngredientById(@PathVariable UUID id){
         return new ResponseEntity<>(id, HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Map<String, UUID>> createIngredient(
+            @RequestBody CreateIngredientRequest request) {
+
+        UUID id = UUID.randomUUID();
+
+        Map<String, UUID> responseBody = new HashMap<>();
+        responseBody.put("id", id);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 }
