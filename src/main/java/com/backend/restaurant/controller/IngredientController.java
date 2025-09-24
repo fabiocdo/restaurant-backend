@@ -39,14 +39,11 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, UUID>> createIngredient(
+    public ResponseEntity <UUID> createIngredient(
             @RequestBody CreateIngredientRequest request) {
 
         UUID id = UUID.randomUUID();
 
-        Map<String, UUID> responseBody = new HashMap<>();
-        responseBody.put("id", id);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 }
