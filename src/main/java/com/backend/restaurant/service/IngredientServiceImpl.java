@@ -43,7 +43,10 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public UUID createIngredient(String name, int quantity, BigDecimal price) {
-        return null;
+
+        UUID id = UUID.randomUUID();
+        Ingredient ingredient = new Ingredient(id, name, quantity, price);
+        return id;
     }
 
     @Override

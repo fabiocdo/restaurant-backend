@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.Map;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/ingredients")
@@ -39,10 +37,14 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity <UUID> createIngredient(
+    public ResponseEntity<UUID> createIngredient(
             @RequestBody CreateIngredientRequest request) {
 
-        UUID id = UUID.randomUUID();
+        UUID id = ingredientService.createIngredient(
+                request.getName(),
+                request.getQuantity(),
+                request.getPrice()
+        );
 
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
