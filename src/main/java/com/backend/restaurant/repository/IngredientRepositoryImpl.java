@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +44,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 
     @Override
     public UUID save(Ingredient ingredient) {
-        LocalDateTime now = LocalDateTime.now();
+        Instant now = Instant.now();
 
         String sql = """    
         INSERT INTO ingredients (id, name, quantity, price, created_date, last_modified_date)
@@ -54,8 +56,8 @@ public class IngredientRepositoryImpl implements IngredientRepository {
                 .addValue("name", ingredient.getName())
                 .addValue("quantity", ingredient.getQuantity())
                 .addValue("price", ingredient.getPrice())
-                .addValue("createdDate", now)
-                .addValue("lastModifiedDate", now);
+                .addValue("createdDate", Timestamp.from(now))
+                .addValue("lastModifiedDate", Timestamp.from(now));
 
         jdbcTemplate.update(sql, params);
         return ingredient.getId();}
