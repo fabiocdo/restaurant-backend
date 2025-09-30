@@ -25,17 +25,12 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public Ingredient getIngredientById(UUID id) {
-        return null;
+        return ingredientRepository.findById(id).orElse(null);
     }
 
     @Override
     public List<Ingredient> getIngredientsByName(String name) {
-        Ingredient ingredient = new Ingredient(
-                UUID.fromString("11111111-1111-1111-1111-111111111111"),
-                name,
-                60,
-                BigDecimal.valueOf(12.00));
-        return List.of(ingredient);
+        return ingredientRepository.findByName(name);
     }
 
     @Override

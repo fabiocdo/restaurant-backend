@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -28,7 +28,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     }
 
     @Override
-    public Ingredient findById(UUID id) {
+    public Optional<Ingredient> findById(UUID id) {
         return null;
     }
 
