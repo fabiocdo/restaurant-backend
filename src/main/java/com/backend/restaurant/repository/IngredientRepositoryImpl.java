@@ -1,9 +1,11 @@
 package com.backend.restaurant.repository;
 
 import com.backend.restaurant.model.Ingredient;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,8 +42,23 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 
     @Override
     public UUID save(Ingredient ingredient) {
-        return null;
-    }
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """    
+        INSERT INTO ingredients (id, name, quantity, price, created_date, last_modified_date)
+        VALUES (:id, :name, :quantity, :price, :createdDate, :lastModifiedDate)
+    """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", ingredient.getId())
+                .addValue("name", ingredient.getName())
+                .addValue("quantity", ingredient.getQuantity())
+                .addValue("price", ingredient.getPrice())
+                .addValue("createdDate", now)
+                .addValue("lastModifiedDate", now);
+
+        jdbcTemplate.update(sql, params);
+        return ingredient.getId();}
 
     @Override
     public void delete(UUID id) {
