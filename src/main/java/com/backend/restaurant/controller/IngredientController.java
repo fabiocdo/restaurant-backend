@@ -1,14 +1,11 @@
 package com.backend.restaurant.controller;
 
+import com.backend.restaurant.controller.dto.CreateIngredientRequest;
 import com.backend.restaurant.model.Ingredient;
 import com.backend.restaurant.service.IngredientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,5 +39,18 @@ public class IngredientController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(ingredient);
+    }
+
+    @PostMapping
+    public ResponseEntity<UUID> createIngredient(
+            @RequestBody CreateIngredientRequest request) {
+
+        UUID id = ingredientService.createIngredient(
+                request.getName(),
+                request.getQuantity(),
+                request.getPrice()
+        );
+
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 }

@@ -5,6 +5,7 @@ import com.backend.restaurant.repository.IngredientRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,10 +36,13 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     public void updateIngredient(Ingredient ingredient) {
     }
-
     @Override
     public UUID createIngredient(String name, int quantity, BigDecimal price) {
-        return null;
+        UUID id = UUID.randomUUID();
+        Ingredient ingredient = new Ingredient(id, name, quantity, price);
+        ingredientRepository.save(ingredient);
+
+        return id;
     }
 
     @Override
