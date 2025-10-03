@@ -1,13 +1,16 @@
 package com.backend.restaurant.controller;
 
 import com.backend.restaurant.controller.dto.CreateIngredientRequest;
+import com.backend.restaurant.controller.dto.UpdateIngredientRequest;
 import com.backend.restaurant.model.Ingredient;
 import com.backend.restaurant.service.IngredientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -42,8 +45,7 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity<UUID> createIngredient(
-            @RequestBody CreateIngredientRequest request) {
+    public ResponseEntity<UUID> createIngredient(@RequestBody CreateIngredientRequest request) {
 
         UUID id = ingredientService.createIngredient(
                 request.getName(),
@@ -52,5 +54,20 @@ public class IngredientController {
         );
 
         return new ResponseEntity<>(id, HttpStatus.CREATED);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateIngredient (@PathVariable UUID id, @RequestBody UpdateIngredientRequest request){
+        Optional<Ingredient> existing = Optional.ofNullable(ingredientService.getIngredientById(id));
+
+        if (existing.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        UUID requestBody = ingredientService.createIngredient(
+                request.getName(),
+                request.getQuantity(),
+                request.getPrice()
+        );
+
+        return ResponseEntity.noContent().build();
     }
 }
