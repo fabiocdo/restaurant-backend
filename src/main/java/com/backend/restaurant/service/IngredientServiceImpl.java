@@ -2,11 +2,14 @@ package com.backend.restaurant.service;
 
 import com.backend.restaurant.model.Ingredient;
 import com.backend.restaurant.repository.IngredientRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -35,6 +38,12 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public void updateIngredient(Ingredient ingredient) {
+        Ingredient existing = getIngredientById(ingredient.getId());
+
+        if (existing==null) {
+            throw new NoSuchElementException("Ingredient with id " + ingredient.getId() + " doesn't exist.");
+        }
+        ingredientRepository.update(ingredient);
     }
     @Override
     public UUID createIngredient(String name, int quantity, BigDecimal price) {

@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -57,12 +59,9 @@ public class IngredientController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateIngredient (@PathVariable UUID id, @RequestBody UpdateIngredientRequest request){
-        Optional<Ingredient> existing = Optional.ofNullable(ingredientService.getIngredientById(id));
 
-        if (existing.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        UUID requestBody = ingredientService.createIngredient(
+        Ingredient ingredient = new Ingredient(
+                id,
                 request.getName(),
                 request.getQuantity(),
                 request.getPrice()

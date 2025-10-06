@@ -17,9 +17,7 @@ public class Ingredient {
         this.price = price;
     }
 
-    public UUID getId() {
-        return id;
-    }
+    public UUID getId() {return id;}
 
     public String getName() {
         return name;
