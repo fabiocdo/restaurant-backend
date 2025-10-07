@@ -66,6 +66,7 @@ public class IngredientController {
                 request.getQuantity(),
                 request.getPrice()
         );
+        ingredientService.updateIngredient(ingredient);
 
         return ResponseEntity.noContent().build();
     }
