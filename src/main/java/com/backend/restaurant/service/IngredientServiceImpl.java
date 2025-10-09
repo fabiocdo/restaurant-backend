@@ -38,7 +38,6 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public void updateIngredient(Ingredient ingredient) {
-        System.out.println("DEBUG >>> Ingredient ID: " + ingredient.getId());
 
         Ingredient existing = getIngredientById(ingredient.getId());
 
