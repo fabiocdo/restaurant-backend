@@ -30,9 +30,9 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 
     @Override
     public Optional<Ingredient> findById(UUID id) {
-        final String sql = "SELECT id, name, quantity, price, created_date, last_modified_date FROM ingredients WHERE id = :id";
-
         final MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("id", id);
+
+        final String sql = "SELECT id, name, quantity, price, created_date, last_modified_date FROM ingredients WHERE id = :id";
 
         try {
             final Ingredient ingredient = jdbcTemplate.queryForObject(sql, parameters, new IngredientRowMapper());
@@ -44,26 +44,39 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 
     @Override
     public List<Ingredient> findByName(String name) {
-        final String sql = "SELECT id, name, quantity, price FROM ingredients WHERE name ILIKE CONCAT('%', :name, '%')";
-
         final MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("name", name);
+
+        final String sql = "SELECT id, name, quantity, price FROM ingredients WHERE name ILIKE CONCAT('%', :name, '%')";
 
         return jdbcTemplate.query(sql, parameters, new IngredientRowMapper());
     }
 
     @Override
     public void update(Ingredient ingredient) {
+        Instant now = Instant.now();
 
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("id", ingredient.getId())
+                .addValue("name", ingredient.getName())
+                .addValue("quantity", ingredient.getQuantity())
+                .addValue("price", ingredient.getPrice())
+                .addValue("lastModifiedDate", Timestamp.from(now));
+
+        String sql = """
+        UPDATE ingredients
+        SET name = :name,
+            quantity = :quantity,
+            price = :price,
+            last_modified_date = :lastModifiedDate
+        WHERE id = :id
+    """;
+
+        jdbcTemplate.update(sql, params);
     }
 
     @Override
     public UUID save(Ingredient ingredient) {
         Instant now = Instant.now();
-
-        String sql = """    
-        INSERT INTO ingredients (id, name, quantity, price, created_date, last_modified_date)
-        VALUES (:id, :name, :quantity, :price, :createdDate, :lastModifiedDate)
-    """;
 
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("id", ingredient.getId())
@@ -72,6 +85,11 @@ public class IngredientRepositoryImpl implements IngredientRepository {
                 .addValue("price", ingredient.getPrice())
                 .addValue("createdDate", Timestamp.from(now))
                 .addValue("lastModifiedDate", Timestamp.from(now));
+
+        String sql = """    
+        INSERT INTO ingredients (id, name, quantity, price, created_date, last_modified_date)
+        VALUES (:id, :name, :quantity, :price, :createdDate, :lastModifiedDate)
+    """;
 
         jdbcTemplate.update(sql, params);
         return ingredient.getId();}
