@@ -38,6 +38,7 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public void updateIngredient(Ingredient ingredient) {
+
         Ingredient existing = getIngredientById(ingredient.getId());
 
         if (existing==null) {
