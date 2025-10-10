@@ -15,17 +15,17 @@ import java.util.UUID;
 @Repository
 public class IngredientRepositoryImpl implements IngredientRepository {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public IngredientRepositoryImpl(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public IngredientRepositoryImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
     public List<Ingredient> findAll() {
         String sql = "SELECT id, name, quantity, price, created_date, last_modified_date FROM ingredients";
 
-        return jdbcTemplate.query(sql, new IngredientRowMapper());
+        return namedParameterJdbcTemplate.query(sql, new IngredientRowMapper());
     }
 
     @Override
@@ -35,7 +35,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
         final String sql = "SELECT id, name, quantity, price, created_date, last_modified_date FROM ingredients WHERE id = :id";
 
         try {
-            final Ingredient ingredient = jdbcTemplate.queryForObject(sql, parameters, new IngredientRowMapper());
+            final Ingredient ingredient = namedParameterJdbcTemplate.queryForObject(sql, parameters, new IngredientRowMapper());
             return Optional.ofNullable(ingredient);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -48,7 +48,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 
         final String sql = "SELECT id, name, quantity, price FROM ingredients WHERE name ILIKE CONCAT('%', :name, '%')";
 
-        return jdbcTemplate.query(sql, parameters, new IngredientRowMapper());
+        return namedParameterJdbcTemplate.query(sql, parameters, new IngredientRowMapper());
     }
 
     @Override
@@ -71,7 +71,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
         WHERE id = :id
     """;
 
-        jdbcTemplate.update(sql, params);
+        namedParameterJdbcTemplate.update(sql, params);
     }
 
     @Override
@@ -91,11 +91,18 @@ public class IngredientRepositoryImpl implements IngredientRepository {
         VALUES (:id, :name, :quantity, :price, :createdDate, :lastModifiedDate)
     """;
 
-        jdbcTemplate.update(sql, params);
+        namedParameterJdbcTemplate.update(sql, params);
         return ingredient.getId();}
 
     @Override
     public void delete(UUID id) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("id", id);
 
+        String sql = """
+           DELETE FROM ingredients WHERE id = :id;
+           """;
+
+        namedParameterJdbcTemplate.update(sql, params);
     }
 }
