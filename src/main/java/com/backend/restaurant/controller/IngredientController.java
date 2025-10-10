@@ -70,4 +70,11 @@ public class IngredientController {
 
         return ResponseEntity.noContent().build();
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteIngredient (@PathVariable UUID id) {
+
+        ingredientService.deleteIngredient(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
