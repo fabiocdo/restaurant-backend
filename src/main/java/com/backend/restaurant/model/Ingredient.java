@@ -1,6 +1,7 @@
 package com.backend.restaurant.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Ingredient {
@@ -30,4 +31,17 @@ public class Ingredient {
     public BigDecimal getPrice() {
         return price;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Ingredient that = (Ingredient) o;
+        return quantity == that.quantity && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(price, that.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, quantity, price);
+    }
+
 }

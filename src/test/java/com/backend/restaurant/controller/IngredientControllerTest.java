@@ -53,7 +53,30 @@ class IngredientControllerTest {
         verify(ingredientService, never()).getIngredientsByName(any());
     }
 
-    @DisplayName("Given a not null name, when calling getIngredientsByName, then return ingredient")
+    @DisplayName("Given a empty name, when calling getAllIngredients, should return a List with all ingredients")
+    @Test
+    void givenEmptyNameReturnListOfAllIngredients() {
+
+        // Given
+        String emptyName = "      ";
+        List<Ingredient> mockedReturn = List.of(
+                new Ingredient(UUID.randomUUID(), "Ingredient Teste", 1, BigDecimal.ONE),
+                new Ingredient(UUID.randomUUID(), "Ingredient Teste2", 2, BigDecimal.TEN));
+
+        when(ingredientService.getAllIngredients()).thenReturn(mockedReturn);
+
+        // When
+        ResponseEntity<List<Ingredient>> result = ingredientController.getIngredients(emptyName);
+
+        // Then
+        assertThat(result.getBody()).hasSize(2);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        verify(ingredientService).getAllIngredients();
+        verify(ingredientService, never()).getIngredientsByName(any());
+    }
+
+    @DisplayName("Given a not null name, when calling getIngredientsByName, then return list of ingredients")
     @Test
     void givenNotNullNameReturnListOfIngredientsWithThatName() {
 
@@ -62,6 +85,7 @@ class IngredientControllerTest {
         List<Ingredient> mockedReturn = List.of(
                 new Ingredient(UUID.randomUUID(), "Batata inglesa", 1, BigDecimal.ONE),
                 new Ingredient(UUID.randomUUID(), "Batata frita", 2, BigDecimal.TEN));
+
         when(ingredientService.getIngredientsByName(validName)).thenReturn(mockedReturn);
 
         // When
@@ -80,7 +104,7 @@ class IngredientControllerTest {
     void givenNotNullIDReturnIngredient() {
 
         // Given
-        UUID notNullId = UUID.fromString("44444444-4444-4444-4444-444444444444");
+        UUID notNullId = UUID.randomUUID();
         Ingredient mockedReturn = new Ingredient(notNullId, "Batata frita", 2, BigDecimal.TEN);
 
         when(ingredientService.getIngredientById(notNullId)).thenReturn(mockedReturn);
@@ -102,16 +126,18 @@ class IngredientControllerTest {
 
         // Given
         UUID nullId = null;
+        when(ingredientService.getIngredientById(nullId)).thenReturn(null);
 
         // When
         ResponseEntity<Ingredient> result = ingredientController.getIngredientById(nullId);
-        Ingredient mockedReturn = new Ingredient(nullId, "Batata frita", 2, BigDecimal.TEN);
 
         // Then
-        assertThat(mockedReturn==null);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getBody()).isNull();
 
         verify(ingredientService).getIngredientById(nullId);
     }
+
     @DisplayName("Given right values to an ingredient, when calling createIngredient, then create and return HttpStatus.CREATED")
     @Test
     void givenRightNameQuantityPriceCreateIngredient() {
@@ -121,15 +147,15 @@ class IngredientControllerTest {
         BigDecimal price = BigDecimal.TEN;
         UUID createdId = UUID.randomUUID();
 
-        CreateIngredientRequest mockedReturn = new CreateIngredientRequest();
-        mockedReturn.setName(name);
-        mockedReturn.setQuantity(quantity);
-        mockedReturn.setPrice(price);
+        CreateIngredientRequest mockedIngredient = new CreateIngredientRequest();
+        mockedIngredient.setName(name);
+        mockedIngredient.setQuantity(quantity);
+        mockedIngredient.setPrice(price);
 
         when(ingredientService.createIngredient(name, quantity, price)).thenReturn(createdId);
 
         // When
-        ResponseEntity<UUID> result = ingredientController.createIngredient(mockedReturn);
+        ResponseEntity<UUID> result = ingredientController.createIngredient(mockedIngredient);
 
         // Then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -138,6 +164,7 @@ class IngredientControllerTest {
         verify(ingredientService).createIngredient(name, quantity, price);
         verifyNoMoreInteractions(ingredientService);
     }
+
     @DisplayName("Given the correct type values to be updated, when calling updateIngredient, then update and return HttpStatus.NO_CONTENT")
     @Test
     void updateIngredientIfRightIdAndRightInputs() {
@@ -147,28 +174,28 @@ class IngredientControllerTest {
         BigDecimal price = BigDecimal.TEN;
         UUID existingId = UUID.randomUUID();
 
-        UpdateIngredientRequest mockedReturn = new UpdateIngredientRequest();
-                mockedReturn.setName(name);
-                mockedReturn.setQuantity(quantity);
-                mockedReturn.setPrice(price);
+        UpdateIngredientRequest mockedIngredient = new UpdateIngredientRequest();
+        mockedIngredient.setName(name);
+        mockedIngredient.setQuantity(quantity);
+        mockedIngredient.setPrice(price);
 
         Ingredient expectedIngredient = new Ingredient(
                 existingId,
-                mockedReturn.getName(),
-                mockedReturn.getQuantity(),
-                mockedReturn.getPrice()
+                mockedIngredient.getName(),
+                mockedIngredient.getQuantity(),
+                mockedIngredient.getPrice()
         );
         // When
-        ResponseEntity<Void> result = ingredientController.updateIngredient(existingId, mockedReturn);
+        ResponseEntity<Void> result = ingredientController.updateIngredient(existingId, mockedIngredient);
 
         // Then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(result.getBody()).isNull();
 
         verify(ingredientService).updateIngredient(expectedIngredient);
-
         verifyNoMoreInteractions(ingredientService);
     }
+
     @DisplayName("Given valid ID, when calling deleteIngredient, then delete ingredient and return HttpStatus.NO_CONTENT")
     @Test
     void deleteIngredientIfRightIdAndRightInputs() {
@@ -176,11 +203,9 @@ class IngredientControllerTest {
         UUID existingId = UUID.randomUUID();
 
         // When
-        assertThat(existingId).isNotNull();
         ResponseEntity<Void> result = ingredientController.deleteIngredient(existingId);
 
         // Then
-
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(result.getBody()).isNull();
 
