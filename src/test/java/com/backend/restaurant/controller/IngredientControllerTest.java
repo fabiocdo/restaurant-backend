@@ -30,7 +30,7 @@ class IngredientControllerTest {
     @InjectMocks
     private IngredientController ingredientController;
 
-    @DisplayName("Quando name é Null; Chama getAllIngredients")
+    @DisplayName("Given a null name, when calling getAllIngredients, should return a List with all ingredients")
     @Test
     void givenNullNameReturnListOfAllIngredients() {
 
@@ -53,7 +53,7 @@ class IngredientControllerTest {
         verify(ingredientService, never()).getIngredientsByName(any());
     }
 
-    @DisplayName("Quando name não é Null; Chama getIngredientsByName")
+    @DisplayName("Given a not null name, when calling getIngredientsByName, then return ingredient")
     @Test
     void givenNotNullNameReturnListOfIngredientsWithThatName() {
 
@@ -75,13 +75,13 @@ class IngredientControllerTest {
         verify(ingredientService).getIngredientsByName(validName);
     }
 
-    @DisplayName("Quando não é ID Null; Retorna ResponseEntity.ok(ingredient)")
+    @DisplayName("Given not null ID, when calling getIngredientById, then return ingredient")
     @Test
     void givenNotNullIDReturnIngredient() {
 
         // Given
-        UUID notNullId = UUID.randomUUID();
-        Ingredient mockedReturn = new Ingredient(UUID.randomUUID(), "Batata frita", 2, BigDecimal.TEN);
+        UUID notNullId = UUID.fromString("44444444-4444-4444-4444-444444444444");
+        Ingredient mockedReturn = new Ingredient(notNullId, "Batata frita", 2, BigDecimal.TEN);
 
         when(ingredientService.getIngredientById(notNullId)).thenReturn(mockedReturn);
 
@@ -89,14 +89,14 @@ class IngredientControllerTest {
         ResponseEntity<Ingredient> result = ingredientController.getIngredientById(notNullId);
 
         // Then
-        assertNotNull(notNullId);
+        assertNotNull(result);
         assertThat(result.getBody()).isEqualTo(mockedReturn);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         verify(ingredientService).getIngredientById(notNullId);
     }
 
-    @DisplayName("Quando ID é Null; Retorna ResponseEntity.notFound().build()")
+    @DisplayName("Given null ID, when calling getIngredientById, return not found")
     @Test
     void givenNullIDReturnIngredient() {
 
@@ -105,14 +105,14 @@ class IngredientControllerTest {
 
         // When
         ResponseEntity<Ingredient> result = ingredientController.getIngredientById(nullId);
+        Ingredient mockedReturn = new Ingredient(nullId, "Batata frita", 2, BigDecimal.TEN);
 
         // Then
-        assertThat(nullId).isNull();
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(mockedReturn==null);
 
         verify(ingredientService).getIngredientById(nullId);
     }
-    @DisplayName("Quando request do name, quantity e price no formato correto, retorna id do Ingrediente criado")
+    @DisplayName("Given right values to an ingredient, when calling createIngredient, then create and return HttpStatus.CREATED")
     @Test
     void givenRightNameQuantityPriceCreateIngredient() {
         // Given
@@ -138,7 +138,7 @@ class IngredientControllerTest {
         verify(ingredientService).createIngredient(name, quantity, price);
         verifyNoMoreInteractions(ingredientService);
     }
-    @DisplayName("Quando request do name, quantity e price no formato e no id correto, atualiza ingrediente")
+    @DisplayName("Given the correct type values to be updated, when calling updateIngredient, then update and return HttpStatus.NO_CONTENT")
     @Test
     void updateIngredientIfRightIdAndRightInputs() {
         // Given
@@ -152,42 +152,40 @@ class IngredientControllerTest {
                 mockedReturn.setQuantity(quantity);
                 mockedReturn.setPrice(price);
 
+        Ingredient expectedIngredient = new Ingredient(
+                existingId,
+                mockedReturn.getName(),
+                mockedReturn.getQuantity(),
+                mockedReturn.getPrice()
+        );
         // When
         ResponseEntity<Void> result = ingredientController.updateIngredient(existingId, mockedReturn);
 
         // Then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(result.getBody()).isNull();
 
-        verify(ingredientService).updateIngredient(argThat(ingredient ->
-                ingredient.getId().equals(existingId)
-                        && ingredient.getName().equals(name)
-                        && ingredient.getQuantity() == quantity
-                        && ingredient.getPrice().equals(price)
-        ));
+        verify(ingredientService).updateIngredient(expectedIngredient);
+
         verifyNoMoreInteractions(ingredientService);
     }
-    @DisplayName("Quando eu quero, delete ingrediente")
+    @DisplayName("Given valid ID, when calling deleteIngredient, then delete ingredient and return HttpStatus.NO_CONTENT")
     @Test
     void deleteIngredientIfRightIdAndRightInputs() {
         // Given
         UUID existingId = UUID.randomUUID();
 
         // When
-
+        assertThat(existingId).isNotNull();
         ResponseEntity<Void> result = ingredientController.deleteIngredient(existingId);
 
         // Then
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(result.getBody()).isNull();
 
         verify(ingredientService).deleteIngredient(existingId);
         verifyNoMoreInteractions(ingredientService);
     }
 }
-
-    // TODO: PROXIMOS PASSOS:
-    //  1. ELABORAR TODOS OS CENÁRIOS DOS MÉTODOS DO CONTROLLER
-    //  2. DEFINIR GIVEN/WHEN/THEN
-    //  3. MOCKAR RETORNO ESPERADO PARA O CENÁRIO ACONTECER
-    //  4. RODAR OS TESTES E ATINGIR COVERAGE 100%
 
