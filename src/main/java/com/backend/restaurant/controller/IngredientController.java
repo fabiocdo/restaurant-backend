@@ -8,11 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -28,7 +24,7 @@ public class IngredientController {
     @GetMapping
     public ResponseEntity<List<Ingredient>> getIngredients(@RequestParam(value = "name", required = false) String name) {//required false, pq o true é default ai deixa de ser opcional
 
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isBlank()) {
             final List<Ingredient> ingredients = ingredientService.getAllIngredients();
             return new ResponseEntity<>(ingredients, HttpStatus.OK);
         }
@@ -57,8 +53,9 @@ public class IngredientController {
 
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateIngredient (@PathVariable UUID id, @RequestBody UpdateIngredientRequest request){
+    public ResponseEntity<Void> updateIngredient(@PathVariable UUID id, @RequestBody UpdateIngredientRequest request){
 
         Ingredient ingredient = new Ingredient(
                 id,
@@ -71,7 +68,7 @@ public class IngredientController {
         return ResponseEntity.noContent().build();
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteIngredient (@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteIngredient(@PathVariable UUID id) {
 
         ingredientService.deleteIngredient(id);
 
