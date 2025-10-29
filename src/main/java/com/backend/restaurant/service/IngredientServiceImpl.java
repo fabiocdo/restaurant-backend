@@ -35,6 +35,9 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public void updateIngredient(Ingredient ingredient) {
+        if (ingredient.getId() == null) {
+            throw new IllegalArgumentException("Ingredient ID cannot be null.");
+        }
 
         Ingredient existing = getIngredientById(ingredient.getId());
 
@@ -55,6 +58,10 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public void deleteIngredient(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Ingredient ID cannot be null.");
+        }
+
         Ingredient existing = getIngredientById(id);
 
         if (existing == null) {
