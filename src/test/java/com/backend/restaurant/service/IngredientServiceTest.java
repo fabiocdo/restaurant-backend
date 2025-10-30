@@ -1,6 +1,5 @@
 package com.backend.restaurant.service;
 
-import com.backend.restaurant.controller.dto.CreateIngredientRequest;
 import com.backend.restaurant.model.Ingredient;
 import com.backend.restaurant.repository.IngredientRepository;
 import com.backend.restaurant.repository.IngredientRepositoryImpl;
@@ -159,32 +158,48 @@ class IngredientControllerTest {
         verifyNoMoreInteractions(ingredientRepository);
     }
 
-    @DisplayName("Given values, When calling createIngredient, Then return new Ingredient id")
+    @DisplayName("Given non-existent ID, When calling updateIngredient, Then throw NoSuchElementException")
     @Test
-    void createIngredient() {
+    void updateNonExistentIngredientThrows() {
         // Given
         IngredientRepository ingredientRepository = mock(IngredientRepository.class);
         IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
 
-        String name = "Tomato";
-        int quantity = 5;
-        BigDecimal price = BigDecimal.TEN;
+        UUID id = UUID.randomUUID();
+        Ingredient ingredient = new Ingredient(id, "Lettuce", 5, BigDecimal.ONE);
+
+        when(ingredientRepository.findById(id)).thenReturn(Optional.empty());
 
         // When
-        UUID result = ingredientService.createIngredient(name, quantity, price);
+        //non-existent ID
 
         // Then
-        assertThat(result).isNotNull();
+        assertThatThrownBy(() -> ingredientService.updateIngredient(ingredient)).isInstanceOf(NoSuchElementException.class);
 
-        verify(ingredientRepository, times(1))
-                .save(argThat(ingredient ->
-                        ingredient.getName().equals(name)
-                                && ingredient.getQuantity() == quantity
-                                && ingredient.getPrice().compareTo(price) == 0
-                                && ingredient.getId() != null
-                ));
+        verify(ingredientRepository).findById(id);
         verifyNoMoreInteractions(ingredientRepository);
-    }// achei esse bem complicado
+    }
+
+    @DisplayName("Given valid data, When createIngredient is called, Then repository.save is called and ID is returned")
+    @Test
+    void createIngredientSavesAndReturnsId() {
+        // Given
+        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
+        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
+
+        String mockString = "Tomato";
+        int mockInt = 4;
+        BigDecimal mockBigDecimal = BigDecimal.TEN;
+
+        // When
+        UUID id = ingredientService.createIngredient(mockString, mockInt, mockBigDecimal);
+
+        // Then
+        assertThat(id).isNotNull();
+
+        verify(ingredientRepository).save(any(Ingredient.class));
+        verifyNoMoreInteractions(ingredientRepository);
+    }
 
     @DisplayName("Given existing ID, When calling deleteIngredient, Then delete the ingredient")
     @Test
@@ -221,6 +236,27 @@ class IngredientControllerTest {
         // Then
         assertThatThrownBy(() -> ingredientService.deleteIngredient(mockId)).isInstanceOf(IllegalArgumentException.class);
 
+        verifyNoMoreInteractions(ingredientRepository);
+    }
+
+    @DisplayName("Given non-existent ID, When calling deleteIngredient, Then throw NoSuchElementException")
+    @Test
+    void deleteNonExistentIngredientThrows() {
+        // Given
+        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
+        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
+
+        UUID id = UUID.randomUUID();
+
+        when(ingredientRepository.findById(id)).thenReturn(Optional.empty());
+
+        // When
+        //non-existent ID
+
+        // Then
+        assertThatThrownBy(() -> ingredientService.deleteIngredient(id)).isInstanceOf(NoSuchElementException.class);
+
+        verify(ingredientRepository).findById(id);
         verifyNoMoreInteractions(ingredientRepository);
     }
 }
