@@ -25,6 +25,10 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public Ingredient getIngredientById(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Ingredient with id " + id + " doesn't exist.");
+        }
+
         return ingredientRepository.findById(id).orElse(null);
     }
 

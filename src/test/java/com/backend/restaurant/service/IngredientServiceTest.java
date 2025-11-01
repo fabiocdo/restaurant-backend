@@ -1,7 +1,6 @@
 package com.backend.restaurant.service;
 
 import com.backend.restaurant.model.Ingredient;
-import com.backend.restaurant.repository.IngredientRepository;
 import com.backend.restaurant.repository.IngredientRepositoryImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,18 +23,15 @@ import static org.mockito.Mockito.*;
 class IngredientControllerTest {
 
     @Mock
-    private IngredientRepositoryImpl ingredientService;
+    private IngredientRepositoryImpl ingredientRepository;
 
     @InjectMocks
-    private IngredientServiceImpl ingredientController;
+    private IngredientServiceImpl ingredientService;
 
     @DisplayName("Given ingredients in repository, when getAllIngredients is called, then return the full ingredient list")
     @Test
     void callingGetAllIngredientsReturnAllIngredients() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         List<Ingredient> mockIngredients = List.of(
                 new Ingredient(UUID.randomUUID(), "Tomato", 10, BigDecimal.TWO),
                 new Ingredient(UUID.randomUUID(), "Cheese", 5, BigDecimal.TEN),
@@ -57,12 +53,9 @@ class IngredientControllerTest {
 
     @DisplayName("Given ID number, When getIngredientById is called, Then Search and return the ID Ingredient called")
     @Test
-    void callingExistingIdNumber() {
+    void callingExistingIdNumberReturnTheIdIngredient() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
-        UUID ingredientId = UUID.fromString("8a5c1f3b-7e41-4df0-9c0e-5dbad1a2f4a7");
+        UUID ingredientId = UUID.randomUUID();
         Ingredient mockIngredient = new Ingredient(ingredientId, "Tomato", 10, BigDecimal.TWO);
 
         when(ingredientRepository.findById(ingredientId)).thenReturn(Optional.of(mockIngredient));
@@ -72,6 +65,7 @@ class IngredientControllerTest {
 
         // Then
         assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(ingredientId);
 
         verify(ingredientRepository).findById(ingredientId);
         verifyNoMoreInteractions(ingredientRepository);
@@ -81,16 +75,28 @@ class IngredientControllerTest {
     @Test
     void getIngredientById_NullId() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
+        UUID mockId = null;
+
+        // When // Then
+        assertThatThrownBy(() -> ingredientService.getIngredientById(mockId)).isInstanceOf(IllegalArgumentException.class);
+
+        verifyNoMoreInteractions(ingredientRepository);
+    }
+
+    @DisplayName("Given incorrect ID number, When getIngredientById is called, Then if it is Empty return null")
+    @Test
+    void getIngredientByIdWhenIdReturnNull() {
+        // Given
+        UUID mockId = UUID.randomUUID();
+
+        when(ingredientRepository.findById(mockId)).thenReturn(Optional.empty());
 
         // When
-        Ingredient result = ingredientService.getIngredientById(null);
+        Ingredient result = ingredientService.getIngredientById(mockId);
 
         // Then
         assertThat(result).isNull();
 
-        verify(ingredientRepository).findById(null);
         verifyNoMoreInteractions(ingredientRepository);
     }
 
@@ -98,12 +104,9 @@ class IngredientControllerTest {
     @Test
     void getIngredientsByName() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         String mockName = "Tomato";
         List<Ingredient> mockIngredient = List.of(
-                new Ingredient(UUID.randomUUID(), "Tomato", 10, BigDecimal.TWO)
+                new Ingredient(UUID.randomUUID(), mockName, 10, BigDecimal.TWO)
         );
 
         when(ingredientRepository.findByName(mockName)).thenReturn(mockIngredient);
@@ -113,8 +116,10 @@ class IngredientControllerTest {
 
         // Then
         assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo(mockName);
 
-        verify(ingredientRepository).findByName("Tomato");
+
+        verify(ingredientRepository).findByName(mockName);
         verifyNoMoreInteractions(ingredientRepository);
     }
 
@@ -122,9 +127,6 @@ class IngredientControllerTest {
     @Test
     void updateExistingIngredient() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         UUID mockID = UUID.randomUUID();
         Ingredient mockIngredient = new Ingredient(mockID, "Tomato", 10, BigDecimal.TWO);
 
@@ -134,7 +136,6 @@ class IngredientControllerTest {
         ingredientService.updateIngredient(mockIngredient);
 
         // Then
-        assertThat(mockIngredient).isNotNull();
 
         verify(ingredientRepository).update(mockIngredient);
         verifyNoMoreInteractions(ingredientRepository);
@@ -144,15 +145,9 @@ class IngredientControllerTest {
     @Test
     void updateNullIngredient() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         Ingredient mockIngredient = new Ingredient(null, "null", 0, BigDecimal.ZERO);
 
-        // When
-        //mockIngredient == null || id == null
-
-        // Then
+        // When // Then
         assertThatThrownBy(() -> ingredientService.updateIngredient(mockIngredient)).isInstanceOf(IllegalArgumentException.class);
 
         verifyNoMoreInteractions(ingredientRepository);
@@ -162,18 +157,12 @@ class IngredientControllerTest {
     @Test
     void updateNonExistentIngredientThrows() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         UUID id = UUID.randomUUID();
         Ingredient ingredient = new Ingredient(id, "Lettuce", 5, BigDecimal.ONE);
 
         when(ingredientRepository.findById(id)).thenReturn(Optional.empty());
 
-        // When
-        //non-existent ID
-
-        // Then
+        // When // Then
         assertThatThrownBy(() -> ingredientService.updateIngredient(ingredient)).isInstanceOf(NoSuchElementException.class);
 
         verify(ingredientRepository).findById(id);
@@ -184,9 +173,6 @@ class IngredientControllerTest {
     @Test
     void createIngredientSavesAndReturnsId() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         String mockString = "Tomato";
         int mockInt = 4;
         BigDecimal mockBigDecimal = BigDecimal.TEN;
@@ -205,9 +191,6 @@ class IngredientControllerTest {
     @Test
     void existingIdThenDeleteIngredient() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         UUID mockId = UUID.randomUUID();
         Ingredient mockIngredient = new Ingredient(mockId, "Tomato", 10, BigDecimal.TEN);
 
@@ -225,15 +208,9 @@ class IngredientControllerTest {
     @Test
     void nullIdThenThrowException() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         UUID mockId = null;
 
-        // When
-        //mockId == null
-
-        // Then
+        // When // Then
         assertThatThrownBy(() -> ingredientService.deleteIngredient(mockId)).isInstanceOf(IllegalArgumentException.class);
 
         verifyNoMoreInteractions(ingredientRepository);
@@ -243,17 +220,11 @@ class IngredientControllerTest {
     @Test
     void deleteNonExistentIngredientThrows() {
         // Given
-        IngredientRepository ingredientRepository = mock(IngredientRepository.class);
-        IngredientServiceImpl ingredientService = new IngredientServiceImpl(ingredientRepository);
-
         UUID id = UUID.randomUUID();
 
         when(ingredientRepository.findById(id)).thenReturn(Optional.empty());
 
-        // When
-        //non-existent ID
-
-        // Then
+        // When // Then
         assertThatThrownBy(() -> ingredientService.deleteIngredient(id)).isInstanceOf(NoSuchElementException.class);
 
         verify(ingredientRepository).findById(id);
