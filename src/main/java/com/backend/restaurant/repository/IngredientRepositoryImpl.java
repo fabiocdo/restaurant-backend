@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,6 +45,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 
     @Override
     public List<Ingredient> findByName(String name) {
+
         final MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("name", name);
 
         final String sql = "SELECT id, name, quantity, price FROM ingredients WHERE name ILIKE CONCAT('%', :name, '%')";
