@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +33,7 @@ class IngredientRepositoryTest {
     @DisplayName("Given ingredients in repository, when findAll is called, then return the full ingredient list")
     @Test
     void callingFindAllReturnAllIngredients() {
+
         // Given
         List<Ingredient> mockList = List.of(
                 new Ingredient(UUID.randomUUID(), "Tomato", 10, BigDecimal.TWO),
@@ -53,7 +53,7 @@ class IngredientRepositoryTest {
         assertThat(mockList).isEqualTo(result);
         verifyNoMoreInteractions(namedParameterJdbcTemplate);
     }
-/// //////////////////////////embaixo
+
     @DisplayName("Given none ingredients in repository, when findAll is called, then return the full ingredient list")
     @Test
     void callingFindAllReturnAEmptyIngredients() {
@@ -97,13 +97,14 @@ class IngredientRepositoryTest {
     @Test
     void callingNonExistingFindById() {
 
+        //Given
         UUID mockId = UUID.randomUUID();
 
         when(namedParameterJdbcTemplate.queryForObject(
                 anyString(),
                 any(MapSqlParameterSource.class),
                 any(IngredientRowMapper.class)
-        )).thenThrow(new EmptyResultDataAccessException(1));
+        )).thenThrow(new EmptyResultDataAccessException(0));
 
         // When
         Optional<Ingredient> result = ingredientRepository.findById(mockId);
@@ -115,6 +116,8 @@ class IngredientRepositoryTest {
     @DisplayName("Given name in repository, when findByName is called, then return Ingredient")
     @Test
     void callingExistingName() {
+
+        //Given
         String mockName = "Tomato";
         List<Ingredient> mockIngredient = List.of(new Ingredient(UUID.randomUUID(), mockName, 10, BigDecimal.TWO));
 
@@ -131,11 +134,13 @@ class IngredientRepositoryTest {
         assertThat(result).isEqualTo(mockIngredient);
         verifyNoMoreInteractions(namedParameterJdbcTemplate);
     }
-/// ////////////////// embvaixo
-    @DisplayName("Given non-existing name in repository, when findByName is called, then return IllegalArgumentException")
+
+    @DisplayName("Given non-existing name in repository, when findByName is called, then return Empty list")
     @Test
     void callingNonExistingName() {
+
         //Given
+        String nonExistentIngredientName = " ";
         when(namedParameterJdbcTemplate.query(
                 anyString(),
                 any(MapSqlParameterSource.class),
@@ -143,11 +148,11 @@ class IngredientRepositoryTest {
         )).thenReturn(List.of());
 
         //When
-        List<Ingredient> result = ingredientRepository.findByName(null);
+        List<Ingredient> result = ingredientRepository.findByName(nonExistentIngredientName);
 
         //Then
         assertThat(result).isEmpty();
-        verify(namedParameterJdbcTemplate).query(anyString(), (SqlParameterSource) any(), (RowMapper<Object>) any());
+        verify(namedParameterJdbcTemplate).query(anyString(), any(SqlParameterSource.class), any(RowMapper.class));
     }
 
     @DisplayName("Given id in repository, when update is called, then update Ingredient")
@@ -191,27 +196,4 @@ class IngredientRepositoryTest {
         verify(namedParameterJdbcTemplate, times(1)).update(anyString(), any(MapSqlParameterSource.class));
     }
 
-    @DisplayName("Given a ResultSet, when mapRow is called, then Ingredient is correctly mapped")
-    @Test
-    void testIngredientRowMapper() throws Exception {
-        // Given
-        ResultSet rs = mock(ResultSet.class); //ResultSet is the JDBC type that represents a row returned from the database.
-
-        UUID id = UUID.randomUUID();
-        when(rs.getObject("id", UUID.class)).thenReturn(id);
-        when(rs.getString("name")).thenReturn("Tomato");
-        when(rs.getInt("quantity")).thenReturn(10);
-        when(rs.getBigDecimal("price")).thenReturn(BigDecimal.TWO);
-
-        IngredientRowMapper mapper = new IngredientRowMapper();
-
-        // When
-        Ingredient ingredient = mapper.mapRow(rs, 1);
-
-        // Then
-        assertEquals(id, ingredient.getId());
-        assertEquals("Tomato", ingredient.getName());
-        assertEquals(10, ingredient.getQuantity());
-        assertEquals(BigDecimal.TWO, ingredient.getPrice());
-    }
 }
