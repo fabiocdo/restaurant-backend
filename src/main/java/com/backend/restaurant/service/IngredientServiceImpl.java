@@ -34,6 +34,11 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public List<Ingredient> getIngredientsByName(String name) {
+
+        if (name == null) {
+            throw new IllegalArgumentException("Incorrect input-> " + name);
+        }
+
         return ingredientRepository.findByName(name);
     }
 

@@ -123,6 +123,18 @@ class IngredientControllerTest {
         verifyNoMoreInteractions(ingredientRepository);
     }
 
+    @DisplayName("Given null input name, When calling getIngredientsByName, Then return the IllegalArgumentException")
+    @Test
+    void getNullIngredientsByName() {
+        // Given
+        String nullMockName = null;
+
+        // When // Then
+        assertThatThrownBy(() -> ingredientService.getIngredientsByName(nullMockName)).isInstanceOf(IllegalArgumentException.class);
+
+        verifyNoMoreInteractions(ingredientRepository);
+    }
+
     @DisplayName("Given existing ID, When calling updateIngredient, Then update the values of the Ingredient")
     @Test
     void updateExistingIngredient() {

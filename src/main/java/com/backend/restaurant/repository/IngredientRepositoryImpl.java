@@ -44,6 +44,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 
     @Override
     public List<Ingredient> findByName(String name) {
+
         final MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("name", name);
 
         final String sql = "SELECT id, name, quantity, price FROM ingredients WHERE name ILIKE CONCAT('%', :name, '%')";
