@@ -7,7 +7,7 @@ import java.util.UUID;
 public class Recipe {
     private final UUID id;
     private final String name;
-    private final List<Ingredient> ingredients;
+    private List<Ingredient> ingredients;
     private final BigDecimal totalPrice;
 
     public Recipe(UUID id, String name, List<Ingredient> ingredients, BigDecimal totalPrice) {

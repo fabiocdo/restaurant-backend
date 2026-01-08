@@ -1,5 +1,6 @@
 package com.backend.restaurant.controller;
 
+import com.backend.restaurant.model.Ingredient;
 import com.backend.restaurant.model.Recipe;
 import com.backend.restaurant.service.RecipeService;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,8 @@ public class RecipeController {
 
     @GetMapping
     public ResponseEntity<List<Recipe>> getAllRecipes(@RequestParam(value = "name", required = false) String name) {
-        List<Recipe> recipes = recipeService.getAllRecipes();
-        return new ResponseEntity(recipes, HttpStatus.OK);
+            final List<Recipe> recipes = recipeService.getAllRecipes();
+            return ResponseEntity.ok(recipes);
+
     }
 }

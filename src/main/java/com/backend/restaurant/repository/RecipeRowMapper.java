@@ -14,7 +14,7 @@ public class RecipeRowMapper implements RowMapper<Recipe> {
     public Recipe mapRow(ResultSet rs, int rowNum) throws SQLException {
         final UUID id = rs.getObject("id", UUID.class);;
         final String name = rs.getString("name");
-        final BigDecimal totalPrice = rs.getBigDecimal("totalPrice");
+        final BigDecimal totalPrice = rs.getBigDecimal("total_price");
 
         return new Recipe(id, name, new ArrayList<>(), totalPrice);
     }

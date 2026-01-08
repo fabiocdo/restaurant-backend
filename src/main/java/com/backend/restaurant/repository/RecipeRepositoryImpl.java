@@ -23,11 +23,11 @@ public class RecipeRepositoryImpl implements RecipeRepository {
                 "FROM recipe";
 
         String ingredientsSql = """
-                    SELECT i.id, i.name, i.price, ir.ingredient_quantity
-                    FROM ingredient i
+                    SELECT i.id, i.name, i.price, i.quantity
+                    FROM ingredients i
                     JOIN ingredient_recipe ir
-                      ON i.id = ir.ingredient_id
-                    WHERE ir.recipe_id = :recipeId
+                      ON i.id = ir.fk_ingredient_id
+                    WHERE ir.fk_recipe_id = :recipeId
                 """;
 
         List<Recipe> recipes =
