@@ -23,12 +23,17 @@ public class RecipeRepositoryImpl implements RecipeRepository {
                 "FROM recipe";
 
         String ingredientsSql = """
-                    SELECT i.id, i.name, i.price, i.quantity
+                    SELECT
+                        i.id,
+                        i.name,
+                        i.price,
+                        ir.ingredient_quantity AS quantity
                     FROM ingredients i
                     JOIN ingredient_recipe ir
                       ON i.id = ir.fk_ingredient_id
                     WHERE ir.fk_recipe_id = :recipeId
                 """;
+
 
         List<Recipe> recipes =
                 namedParameterJdbcTemplate.query(recipesSql, new RecipeRowMapper());
@@ -51,4 +56,56 @@ public class RecipeRepositoryImpl implements RecipeRepository {
 
         return recipes;
     }
+
+    @Override
+    public List<Recipe> findByName(String name) {
+
+        String recipesSql = """
+                    SELECT id, name, total_price
+                    FROM recipe
+                    WHERE name ILIKE :name
+                """;
+
+        String ingredientsSql = """
+                    SELECT
+                        i.id,
+                        i.name,
+                        i.price,
+                        ir.ingredient_quantity AS quantity
+                    FROM ingredients i
+                    JOIN ingredient_recipe ir
+                      ON i.id = ir.fk_ingredient_id
+                    WHERE ir.fk_recipe_id = :recipeId
+                """;
+
+        MapSqlParameterSource recipeParams =
+                new MapSqlParameterSource()
+                        .addValue("name", "%" + name + "%");
+
+        List<Recipe> recipes =
+                namedParameterJdbcTemplate.query(
+                        recipesSql,
+                        recipeParams,
+                        new RecipeRowMapper()
+                );
+
+        recipes.forEach(recipe -> {
+
+            MapSqlParameterSource ingredientParams =
+                    new MapSqlParameterSource()
+                            .addValue("recipeId", recipe.getId());
+
+            List<Ingredient> ingredientsForRecipe =
+                    namedParameterJdbcTemplate.query(
+                            ingredientsSql,
+                            ingredientParams,
+                            new IngredientRowMapper()
+                    );
+
+            recipe.getIngredients().addAll(ingredientsForRecipe);
+        });
+
+        return recipes;
+    }
+
 }

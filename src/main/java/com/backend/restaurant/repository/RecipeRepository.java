@@ -6,4 +6,6 @@ import java.util.List;
 public interface RecipeRepository {
 
     List<Recipe> findAll();
+    List<Recipe> findByName(String name);
+
 }

@@ -20,6 +20,7 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public List<Ingredient> getAllIngredients() {
+
         return ingredientRepository.findAll();
     }
 

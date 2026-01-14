@@ -15,10 +15,18 @@ private final RecipeRepository recipeRepository;
         this.recipeRepository = recipeRepository;
     }
 
-
     @Override
     public List<Recipe> getAllRecipes() {
 
         return recipeRepository.findAll();
+    }
+
+    @Override
+    public List<Recipe> getRecipesByName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Incorrect input-> " + name);
+        }
+
+        return recipeRepository.findByName(name);
     }
 }

@@ -37,6 +37,9 @@ jacoco {
 
 test {
     finalizedBy jacocoTestReport
+    jvmArgs "-javaagent:${configurations.testRuntimeClasspath.find { it.name.contains('byte-buddy-agent') }}"
+
+
 }
 
 jacocoTestReport {
