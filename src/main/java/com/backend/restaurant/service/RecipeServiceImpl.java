@@ -24,7 +24,7 @@ private final RecipeRepository recipeRepository;
     @Override
     public List<Recipe> getRecipesByName(String name) {
         if (name == null) {
-            throw new IllegalArgumentException("Incorrect input-> " + name);
+            throw new IllegalArgumentException("Incorrect input-> name cannot be null");
         }
 
         return recipeRepository.findByName(name);

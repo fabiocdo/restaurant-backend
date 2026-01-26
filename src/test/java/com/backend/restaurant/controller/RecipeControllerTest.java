@@ -31,7 +31,7 @@ public class RecipeControllerTest {
     @Test
     void givenNullNameReturnListOfAllRecipes() {
         //GIVEN
-        String validName = null;
+        String nullName = null;
         List<Recipe> mockedReturn = List.of(
                 new Recipe(UUID.randomUUID(), "Tomato Pasta", Collections.emptyList(), BigDecimal.ONE),
                 new Recipe(UUID.randomUUID(), "Omelete de Bacon", Collections.emptyList(), BigDecimal.ONE));
@@ -39,7 +39,7 @@ public class RecipeControllerTest {
         when(recipeService.getAllRecipes()).thenReturn(mockedReturn);
 
         //WHEN
-        ResponseEntity<List<Recipe>> result = recipeController.getAllRecipes(validName);
+        ResponseEntity<List<Recipe>> result = recipeController.getAllRecipes(nullName);
 
         //THEN
         assertThat(result.getBody()).hasSize(2);
@@ -53,7 +53,7 @@ public class RecipeControllerTest {
     @Test
     void givenEmptyNameReturnListOfAllRecipes() {
         //GIVEN
-        String validName = "      ";
+        String emptyName = "";
         List<Recipe> mockedReturn = List.of(
                 new Recipe(UUID.randomUUID(), "Tomato Pasta", Collections.emptyList(), BigDecimal.ONE),
                 new Recipe(UUID.randomUUID(), "Omelete de Bacon", Collections.emptyList(), BigDecimal.ONE));
@@ -61,7 +61,7 @@ public class RecipeControllerTest {
         when(recipeService.getAllRecipes()).thenReturn(mockedReturn);
 
         //WHEN
-        ResponseEntity<List<Recipe>> result = recipeController.getAllRecipes(validName);
+        ResponseEntity<List<Recipe>> result = recipeController.getAllRecipes(emptyName);
 
         //THEN
         assertThat(result.getBody()).hasSize(2);
