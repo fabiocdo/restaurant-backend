@@ -31,11 +31,11 @@ public class RecipeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Recipe> getRecipeById(@PathVariable UUID id){
-        Recipe recipes = recipeService.getRecipeById(id);
+        Recipe recipe = recipeService.getRecipeById(id);
 
-        if (recipes == null) {
+        if (recipe == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(recipes);
+        return ResponseEntity.ok(recipe);
     }
 }

@@ -34,7 +34,7 @@ private final RecipeRepository recipeRepository;
     @Override
     public Recipe getRecipeById(UUID id) {
         if (id == null) {
-            throw new IllegalArgumentException("Recipe with this id doesn't exist.");
+            throw new IllegalArgumentException("ID is null.");
         }
 
         return recipeRepository.findById(id).orElse(null);
