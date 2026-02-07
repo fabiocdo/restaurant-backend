@@ -113,19 +113,15 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     @Override
     public Optional<Recipe> findById(UUID id) {
 
+        MapSqlParameterSource recipeParams = new MapSqlParameterSource().addValue("id", id);
+
         String recipesSql = """
                     SELECT id, name, total_price, created_date, last_modified_date
                     FROM recipe
                     WHERE id = :id
                 """;
 
-        MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("id", id);
-
-        Recipe recipe = namedParameterJdbcTemplate.queryForObject(
-                recipesSql,
-                parameters,
-                new RecipeRowMapper()
-        );
+        MapSqlParameterSource ingredientParams = new MapSqlParameterSource().addValue("recipeId", id);
 
         String ingredientsSql = """
                     SELECT
@@ -139,15 +135,20 @@ public class RecipeRepositoryImpl implements RecipeRepository {
                     WHERE ir.fk_recipe_id = :recipeId
                 """;
 
-        MapSqlParameterSource ingredientParams =new MapSqlParameterSource().addValue("recipeId", recipe.getId());
-
-        List<Ingredient> ingredients = namedParameterJdbcTemplate.query(
-                        ingredientsSql,
-                        ingredientParams,
-                        new IngredientRowMapper()
-                );
-
         try {
+
+            Recipe recipe = namedParameterJdbcTemplate.queryForObject(
+                    recipesSql,
+                    recipeParams,
+                    new RecipeRowMapper()
+            );
+
+            List<Ingredient> ingredients = namedParameterJdbcTemplate.query(
+                    ingredientsSql,
+                    ingredientParams,
+                    new IngredientRowMapper()
+            );
+
             recipe.getIngredients().addAll(ingredients);
 
             return Optional.of(recipe);
