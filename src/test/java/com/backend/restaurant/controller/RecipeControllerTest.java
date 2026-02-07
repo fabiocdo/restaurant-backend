@@ -1,5 +1,6 @@
 package com.backend.restaurant.controller;
 
+import com.backend.restaurant.model.Ingredient;
 import com.backend.restaurant.model.Recipe;
 import com.backend.restaurant.service.RecipeService;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,5 +92,57 @@ public class RecipeControllerTest {
 
         verify(recipeService, never()).getAllRecipes();
         verify(recipeService).getRecipesByName(validName);
+    }
+    @DisplayName("Given existing ID, when calling getRecipeById, then return recipe")
+    @Test
+    void givenExistingIDReturnIngredient() {
+
+        // Given
+        UUID existingId = UUID.randomUUID();
+        List<Ingredient> ListOfIngredients = List.of(
+                new Ingredient(
+                        UUID.randomUUID(),
+                        "Ovo",
+                        2,
+                        BigDecimal.TEN
+                ),
+                new Ingredient(
+                        UUID.randomUUID(),
+                        "Frango",
+                        2,
+                        BigDecimal.TEN
+                )
+        );
+        Recipe mockedReturn = new Recipe(existingId, "Omelete com Frango", ListOfIngredients, BigDecimal.TEN);
+
+        when(recipeService.getRecipeById(existingId)).thenReturn(mockedReturn);
+
+        // When
+        ResponseEntity<Recipe> result = recipeController.getRecipeById(existingId);
+
+        // Then
+        assertNotNull(result);
+        assertThat(result.getBody()).isEqualTo(mockedReturn);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        verify(recipeService).getRecipeById(existingId);
+    }
+
+    @DisplayName("Given null ID, when calling getRecipeById, then not found")
+    @Test
+    void givenNullIDReturnIngredient() {
+
+        // Given
+        UUID nullId = null;
+        when(recipeService.getRecipeById(nullId)).thenReturn(null);
+
+        // When
+        ResponseEntity<Recipe> result = recipeController.getRecipeById(nullId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getBody()).isNull();
+
+        verify(recipeService).getRecipeById(nullId);
     }
 }

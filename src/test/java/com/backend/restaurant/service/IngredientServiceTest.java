@@ -71,9 +71,9 @@ class IngredientControllerTest {
         verifyNoMoreInteractions(ingredientRepository);
     }
 
-    @DisplayName("Given incorrect ID number, When getIngredientById is called, Then if it is Empty return null")
+    @DisplayName("Given null ID number, When getIngredientById is called, Then throw IllegalArgumentException")
     @Test
-    void getIngredientById_NullId() {
+    void getIngredientByIdNullId() {
         // Given
         UUID mockId = null;
 
@@ -83,9 +83,9 @@ class IngredientControllerTest {
         verifyNoMoreInteractions(ingredientRepository);
     }
 
-    @DisplayName("Given incorrect ID number, When getIngredientById is called, Then if it is Empty return null")
+    @DisplayName("Given empty ID number, When getIngredientById is called, Then if it is Empty return null")
     @Test
-    void getIngredientByIdWhenIdReturnNull() {
+    void getIngredientByIdWhenIdReturnEmpty() {
         // Given
         UUID mockId = UUID.randomUUID();
 

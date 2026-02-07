@@ -5,6 +5,7 @@ import com.backend.restaurant.repository.RecipeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RecipeServiceImpl implements RecipeService{
@@ -28,5 +29,14 @@ private final RecipeRepository recipeRepository;
         }
 
         return recipeRepository.findByName(name);
+    }
+
+    @Override
+    public Recipe getRecipeById(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID is null.");
+        }
+
+        return recipeRepository.findById(id).orElse(null);
     }
 }

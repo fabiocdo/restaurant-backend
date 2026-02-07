@@ -1,14 +1,13 @@
 package com.backend.restaurant.controller;
 
+import com.backend.restaurant.model.Ingredient;
 import com.backend.restaurant.model.Recipe;
 import com.backend.restaurant.service.RecipeService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/recipes")
@@ -28,5 +27,15 @@ public class RecipeController {
         }
         final List<Recipe> recipes = recipeService.getRecipesByName(name);
         return ResponseEntity.ok(recipes);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Recipe> getRecipeById(@PathVariable UUID id){
+        Recipe recipe = recipeService.getRecipeById(id);
+
+        if (recipe == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(recipe);
     }
 }

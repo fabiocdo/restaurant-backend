@@ -54,7 +54,7 @@ class IngredientRepositoryTest {
         verifyNoMoreInteractions(namedParameterJdbcTemplate);
     }
 
-    @DisplayName("Given none ingredients in repository, when findAll is called, then return the full ingredient list")
+    @DisplayName("Given none ingredients in repository, when findAll is called, then return empty ingredients")
     @Test
     void callingFindAllReturnAEmptyIngredients() {
 
